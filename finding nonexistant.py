@@ -36,10 +36,7 @@ def CountFrequency(my_list):
 
 
 ''' create a dict using Counter of a
-flat list of words (re.findall(re.compile(r"[a-zA-Z]+"), lines)) in (lines in file->for lines in fh)
-'''
-
-
+flat list of words (re.findall(re.compile(r"[a-zA-Z]+"), lines)) in (lines in file->for lines in fh)'''
 def _fileIndex(fh):
     return Counter(
         [wrd.lower() for wrdList in
@@ -57,11 +54,11 @@ def sortFreqDict(freqdict):
 
 def put_list_infile(fname: str, l: list):
     fout = open(fname, 'w+')
-    for fw in sorteddict:
-        if (fw.__len__() == 2):
+    for fw in l:
+        if fw.__len__() == 2:
             fout.write(str(fw[1]) + '\t' + str(fw[0]) + '\n')
-        elif (fw.__len__() == 3):
-            fout.write(str(fw[1]) + '\t' + str(fw[0]) + str(fw[2]) + '\n')
+        elif fw.__len__() == 3:
+            fout.write(str(fw[1]) + '\t' + str(fw[0]) + '\t' + str(fw[2]) + '\n')
     fout.close()
 
 
@@ -113,6 +110,7 @@ for lemma in tqdm(freq.keys()):
         print()
         print(lemma + " doesn't exist")
 
+todo.sort()
+todo.reverse()
 print('collected these non-existant lemmas: ', todo);
-sorteddict = todo.sort().reverse();
-put_list_infile(fname.split('.')[0] + ".todo_list", sorteddict)
+put_list_infile(fname.split('.')[0] + ".todo_list", todo)

@@ -29,16 +29,23 @@ def CountFrequency(my_list):
             freq[item] = 1
     return freq
 
-def _fileIndex(fh):
 ''' create a dict using Counter of a
 flat list of words (re.findall(re.compile(r"[a-zA-Z]+"), lines)) in (lines in file->for lines in fh)
 '''
-return Counter(
+def _fileIndex(fh):
+    return Counter(
     [wrd.lower() for wrdList in
      [words for words in
       [re.findall(re.compile(r'[a-zA-Z]+'), lines) for lines in fh]]
      for wrd in wrdList])
 
+def sortFreqDict(freqdict):
+    aux = [(freqdict[key], key) for key in freqdict]
+    aux.sort()
+    aux.reverse()
+    return aux
+
+# ------------------------  Begin main program -----------------------------------
 # if(ifexists('nl', u'dog')):
 #    print("such word exists")
 # else:
@@ -63,10 +70,12 @@ for word in words:
 print('first 10 lemmas: ', lemmas[0:10])
 freq = CountFrequency(lemmas)
 
-print('first 10 freqs: ', freq.items())
+sorteddict =  sortFreqDict(freqdict=freq)
+print('first 10 freqs: ',sorteddict[0:10])
+
 print('Starting seeking in Wiktionary...')
 
-todo = []
+todo = {}
 i = 0
 for lemma in tqdm(freq.keys()):
     i += 1
@@ -74,7 +83,7 @@ for lemma in tqdm(freq.keys()):
         # print(lemma + " exists")
         continue
     else:
-        todo.append(lemma: freq[lemma])
+        todo[lemma] = freq[lemma]
         print()
         print(lemma + " doesn't exist")
 

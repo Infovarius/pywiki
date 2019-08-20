@@ -45,6 +45,13 @@ def sortFreqDict(freqdict):
     aux.reverse()
     return aux
 
+def put_list_infile(fname: str, l: list):
+    fout = open(fname, 'w+')
+    for fw in sorteddict:
+        fout.write(str(fw[1]) + '\t' + str(fw[0]) + '\n')
+    fout.close()
+
+
 # ------------------------  Begin main program -----------------------------------
 # if(ifexists('nl', u'dog')):
 #    print("such word exists")
@@ -53,7 +60,8 @@ def sortFreqDict(freqdict):
 
 morph = pymorphy2.MorphAnalyzer()
 
-fin = open('text.txt', 'r')
+fname = 'text.txt'
+fin = open(fname, 'r')
 # l = [line.strip() for line in fin]
 text = fin.read()
 fin.close()
@@ -71,6 +79,9 @@ print('first 10 lemmas: ', lemmas[0:10])
 freq = CountFrequency(lemmas)
 
 sorteddict =  sortFreqDict(freqdict=freq)
+
+put_list_infile(fname.split('.')[0]+".word_freq", sorteddict)
+
 print('first 10 freqs: ',sorteddict[0:10])
 
 print('Starting seeking in Wiktionary...')
@@ -88,3 +99,5 @@ for lemma in tqdm(freq.keys()):
         print(lemma + " doesn't exist")
 
 print('collected these non-existant lemmas: ', todo)
+sorteddict =  sortFreqDict(freqdict=todo)
+put_list_infile(fname.split('.')[0]+".todo_list", sorteddict)

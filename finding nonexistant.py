@@ -58,7 +58,10 @@ def sortFreqDict(freqdict):
 def put_list_infile(fname: str, l: list):
     fout = open(fname, 'w+')
     for fw in sorteddict:
-        fout.write(str(fw[1]) + '\t' + str(fw[0]) + '\n')
+        if (fw.__len__() == 2):
+            fout.write(str(fw[1]) + '\t' + str(fw[0]) + '\n')
+        elif (fw.__len__() == 3):
+            fout.write(str(fw[1]) + '\t' + str(fw[0]) + str(fw[2]) + '\n')
     fout.close()
 
 
@@ -106,10 +109,10 @@ for lemma in tqdm(freq.keys()):
         continue
     else:
         #       word = [w for w in words if get_lemma(w) == lemma]
-        todo.append([(word, freq[lemma]) for word in words if get_lemma(word) == lemma])
+        todo.append( (freq[lemma], lemma, set([word for word in words if get_lemma(word) == lemma])) )
         print()
         print(lemma + " doesn't exist")
 
 print('collected these non-existant lemmas: ', todo);
-sorteddict = sortFreqDict(freqdict=todo);
+sorteddict = todo.sort().reverse();
 put_list_infile(fname.split('.')[0] + ".todo_list", sorteddict)

@@ -29,6 +29,16 @@ def CountFrequency(my_list):
             freq[item] = 1
     return freq
 
+def _fileIndex(fh):
+''' create a dict using Counter of a
+flat list of words (re.findall(re.compile(r"[a-zA-Z]+"), lines)) in (lines in file->for lines in fh)
+'''
+return Counter(
+    [wrd.lower() for wrdList in
+     [words for words in
+      [re.findall(re.compile(r'[a-zA-Z]+'), lines) for lines in fh]]
+     for wrd in wrdList])
+
 # if(ifexists('nl', u'dog')):
 #    print("such word exists")
 # else:

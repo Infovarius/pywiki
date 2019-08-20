@@ -70,14 +70,14 @@ def put_list_infile(fname: str, l: list):
 
 morph = pymorphy2.MorphAnalyzer()
 
-fname = 'text.txt'
+fname = 'Азазель.txt'
 fin = open(fname, 'r')
 # l = [line.strip() for line in fin]
 text = fin.read()
 fin.close()
 
-text = text.replace('.', ' ').replace(',', ' ').replace(' - ', ' ').replace('!', ' ').replace('?', ' ')
-text = text.replace(':', ' ').replace(';', ' ').replace('(', ' ').replace(')', ' ')
+text = text.replace('.', ' ').replace(',', ' ').replace(' - ', ' ').replace(' -- ', ' ').replace('!', ' ').replace('?', ' ')
+text = text.replace(':', ' ').replace(';', ' ').replace('(', ' ').replace(')', ' ').replace(' " ', ' ')
 words = text.split()
 
 print(str(words.__len__()) + " words were found")

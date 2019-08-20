@@ -1,6 +1,7 @@
 import pywikibot
 import re
 import pymorphy2
+from tqdm import tqdm
 import time
 
 

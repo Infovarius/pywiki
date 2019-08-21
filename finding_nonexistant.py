@@ -78,7 +78,7 @@ fin.close()
 
 text = text.replace('.', ' ').replace(',', ' ').replace(' - ', ' ').replace(' -- ', ' ').replace('!', ' ').replace('?', ' ')
 text = text.replace(':', ' ').replace(';', ' ').replace('(', ' ').replace(')', ' ').replace('"', ' ')
-text = text.replace('{', ' ').replace('}', ' ')
+text = text.replace('{', ' ').replace('}', ' ').replace('[', ' ').replace(']', ' ').replace('*', ' ')
 words = text.split()
 
 print(str(words.__len__()) + " words were found")

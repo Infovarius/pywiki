@@ -114,26 +114,33 @@ todo = []
 i = 0
 for lemma in tqdm(freq.keys()):
     i += 1
-    search = lemma
-    for w in freq[i][1]:
-        if w[0] in cap_cyr:
-            lemma[0] = upchar_cyr[lemma[0]]
+    search = lemma.capitalize()
+
+    for w in freq[lemma][1]:
+        if w[0] in cyr:
+#        if w[0].istitle():
+#            search = w.capitalize()
+#           search = upchar_cyr[w[0]]) + w[1:]
+            search = lemma
             continue
-        if w[0] in cap_lat:
-            lemma[0] = upchar_lat[lemma[0]]
-            continue
-    if ifexists('ru', lemma):
+#        if w[0] in cap_lat:
+#    if search.isdigit():
+#        continue
+    if ifexists('ru', search):
         # print(lemma + " exists")
         continue
     else:
-        if set(lemma) & lat != {} :
-            if ifexists('fr', lemma):
+        if search != lemma:
+            if ifexists('ru', lemma):
                 continue
-        todo.append( (freq[lemma][0], lemma, freq[lemma][1]) )
+        if set(search) & lat != {} :
+            if ifexists('fr', search):
+                continue
+        todo.append( (freq[lemma][0], search, freq[lemma][1]) )
         print()
-        print(lemma + " doesn't exist")
+        print(search + " doesn't exist")
 
 todo.sort()
 todo.reverse()
-print('collected these non-existant lemmas: ', todo);
+print('collected thee non-existant lemmas: ', todo);
 put_list_infile(fname.split('.')[0] + ".todo_list", todo)

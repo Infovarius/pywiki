@@ -4,6 +4,11 @@ import pymorphy2
 from tqdm import tqdm
 import time
 
+lat = set('abcdefghijklmnopqrstuvwxyz')
+cyr = set('абвгдеёжзийклмнопрстуфхцчшщъыьэюя')
+cap_cyr = set('АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ')
+upchar_cyr = {'а':'А', 'б':'Б', 'в':'В', 'г':'Г', 'д':'Д', 'е':'Е', 'ё':'Ё', 'ж':'Ж', 'з':'З', 'и':'И', 'й':'Й', 'к':'К', 'л':'Л', 'м':'М', 'н':'Н', 'о':'О',
+              'п':'П', 'р':'Р', 'с':'С', 'т':'Т', 'у':'У', 'ф':'Ф', 'х':'Х', 'ц':'Ц', 'ч':'Ч', 'ш':'Ш', 'щ':'Щ', 'э':'Э', 'ю':'Ю', 'я':'Я'}
 
 def getlangs(text: str):
     return re.findall(r'= {{-(.*?)-}} =', text)
@@ -12,6 +17,9 @@ def getlangs(text: str):
 def ifexists(lang: str, title: str):
     site = pywikibot.Site()
     page = pywikibot.Page(site, title)
+    if page.isRedirectPage():
+        print ('found redirect: '+title+' to '+re.findall(r'\[\[(.*?)\]\]', page.text)[0])
+        page = page.getRedirectTarget()
     if (page.exists()):
         text = page.text
         return lang in getlangs(text)
@@ -21,17 +29,20 @@ def ifexists(lang: str, title: str):
 
 def get_lemma(word_form: str):
     #    return morph.parse(word)[0].inflect({'sing', 'nomn'}).word)
-    return morph.parse(word_form)[0].normal_form
+    norm = morph.parse(word_form)[0].normal_form
+    return norm
 
 
-def CountFrequency(my_list):
+def CountFrequency(words, lemmas):
     # Creating an empty dictionary
     freq = {}
-    for item in my_list:
+    for i in range(lemmas.__len__()):
+        item = lemmas[i]
         if item in freq:
-            freq[item] += 1
+            freq[item][0] += 1
+            freq[item][1] = freq[item][1] | {words[i]}
         else:
-            freq[item] = 1
+            freq[item] = [1, {words[i]}]
     return freq
 
 
@@ -87,7 +98,8 @@ lemmas = []
 for word in words:
     lemmas.append(get_lemma(word))
 print('first 10 lemmas: ', lemmas[0:10])
-freq = CountFrequency(lemmas)
+freq = CountFrequency(words, lemmas)
+
 print(str(freq.__len__()) + " different lemmas were found")
 
 sorteddict = sortFreqDict(freqdict=freq)
@@ -102,12 +114,22 @@ todo = []
 i = 0
 for lemma in tqdm(freq.keys()):
     i += 1
-    if (ifexists('ru', lemma)):
+    search = lemma
+    for w in freq[i][1]:
+        if w[0] in cap_cyr:
+            lemma[0] = upchar_cyr[lemma[0]]
+            continue
+        if w[0] in cap_lat:
+            lemma[0] = upchar_lat[lemma[0]]
+            continue
+    if ifexists('ru', lemma):
         # print(lemma + " exists")
         continue
     else:
-        #       word = [w for w in words if get_lemma(w) == lemma]
-        todo.append( (freq[lemma], lemma, set([word for word in words if get_lemma(word) == lemma])) )
+        if set(lemma) & lat != {} :
+            if ifexists('fr', lemma):
+                continue
+        todo.append( (freq[lemma][0], lemma, freq[lemma][1]) )
         print()
         print(lemma + " doesn't exist")
 

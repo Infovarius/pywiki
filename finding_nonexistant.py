@@ -18,7 +18,10 @@ def ifexists(lang: str, title: str):
     site = pywikibot.Site()
     page = pywikibot.Page(site, title)
     if page.isRedirectPage():
-        print ('found redirect: '+title+' to '+re.findall(r'\[\[(.*?)\]\]', page.text)[0])
+        try:
+            print ('found redirect: '+title+' to '+re.findall(r'\[\[(.*?)\]\]', page.text)[0])
+        except UnicodeError:
+            print('found redirect: ' + title)
         page = page.getRedirectTarget()
     if (page.exists()):
         text = page.text
@@ -126,19 +129,22 @@ for lemma in tqdm(freq.keys()):
 #        if w[0] in cap_lat:
 #    if search.isdigit():
 #        continue
-    if ifexists('ru', search):
+    if set(search) & lat != {}:
+        if ifexists('fr', search):
+            continue
+        todo.append((freq[lemma][0], search, freq[lemma][1]))
+        print()
+        print(search + " doesn't exist in fr")
+    elif ifexists('ru', search):
         # print(lemma + " exists")
         continue
     else:
         if search != lemma:
             if ifexists('ru', lemma):
                 continue
-        if set(search) & lat != {} :
-            if ifexists('fr', search):
-                continue
         todo.append( (freq[lemma][0], search, freq[lemma][1]) )
         print()
-        print(search + " doesn't exist")
+        print(search + " doesn't exist in ru")
 
 todo.sort()
 todo.reverse()

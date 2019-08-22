@@ -16,18 +16,23 @@ def getlangs(text: str):
 
 def ifexists(lang: str, title: str):
     site = pywikibot.Site()
-    page = pywikibot.Page(site, title)
-    if page.isRedirectPage():
-        try:
-            print ('found redirect: '+title+' to '+re.findall(r'\[\[(.*?)\]\]', page.text)[0])
-        except UnicodeError:
-            print('found redirect: ' + title)
-        page = page.getRedirectTarget()
-    if (page.exists()):
-        text = page.text
-        return lang in getlangs(text)
-    else:
+    try:
+        page = pywikibot.Page(site, title)
+        if page.isRedirectPage():
+            try:
+                print ('found redirect: '+title+' to '+re.findall(r'\[\[(.*?)\]\]', page.text)[0])
+            except UnicodeError:
+                print('found redirect: ' + title)
+            page = page.getRedirectTarget()
+        if (page.exists()):
+            text = page.text
+            return lang in getlangs(text)
+        else:
+            return False
+    except BaseException:
+        print('Error in fetching [['+title+']] from Wiktionary!!!')
         return False
+
 
 
 def get_lemma(word_form: str):
@@ -117,26 +122,26 @@ todo = []
 i = 0
 for lemma in tqdm(freq.keys()):
     i += 1
+    if i==920:
+        print("Oh those errorneous: "+lemma)
     search = lemma.capitalize()
 
     for w in freq[lemma][1]:
         if w[0] in cyr:
-#        if w[0].istitle():
-#            search = w.capitalize()
-#           search = upchar_cyr[w[0]]) + w[1:]
             search = lemma
             continue
-#        if w[0] in cap_lat:
+        if w[0] in lat:
+            search = lemma
+            continue
 #    if search.isdigit():
 #        continue
-    if set(search) & lat != {}:
+    if set(search) & lat != set():
         if ifexists('fr', search):
             continue
         todo.append((freq[lemma][0], search, freq[lemma][1]))
         print()
         print(search + " doesn't exist in fr")
     elif ifexists('ru', search):
-        # print(lemma + " exists")
         continue
     else:
         if search != lemma:
